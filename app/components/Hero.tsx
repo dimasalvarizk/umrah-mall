@@ -18,6 +18,17 @@ export default function Hero() {
       <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-black/40 to-black/75 z-0" />
       <div className="absolute inset-0 bg-black/20 z-0" />
 
+      {/* Light Ray & Sun Glow Effects (Putih-putih) */}
+      <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] rounded-full bg-white/20 filter blur-[120px] z-0 pointer-events-none" />
+      <div
+        className="absolute inset-0 z-0 pointer-events-none opacity-80 mix-blend-screen filter blur-[60px]"
+        style={{
+          background: "linear-gradient(120deg, transparent 30%, rgba(255, 255, 255, 0.1) 42%, rgba(255, 255, 255, 0.45) 50%, rgba(255, 255, 255, 0.1) 58%, transparent 70%)",
+          WebkitMaskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 65%)",
+          maskImage: "linear-gradient(to bottom, rgba(0,0,0,1) 20%, rgba(0,0,0,0) 65%)",
+        }}
+      />
+
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 relative z-10 w-full flex-grow flex flex-col justify-center items-center text-center pt-8">
         {/* Headline & Subtitles */}

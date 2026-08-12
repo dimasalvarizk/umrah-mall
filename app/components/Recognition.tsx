@@ -35,6 +35,7 @@ const certificates = [
 
 export default function Recognition() {
   const [activeIndex, setActiveIndex] = useState(2); // Center card active by default
+  const [prevActiveIndex, setPrevActiveIndex] = useState(2);
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
@@ -61,8 +62,13 @@ export default function Recognition() {
     return () => clearInterval(timer);
   }, [activeIndex]);
 
-  const getCircularDistance = (index: number, activeIndex: number, length: number) => {
-    let diff = index - activeIndex;
+  // Sync prevActiveIndex on activeIndex change to detect card wrap-around
+  useEffect(() => {
+    setPrevActiveIndex(activeIndex);
+  }, [activeIndex]);
+
+  const getCircularDistance = (index: number, currentActiveIndex: number, length: number) => {
+    let diff = index - currentActiveIndex;
     while (diff < -Math.floor(length / 2)) diff += length;
     while (diff > Math.floor(length / 2)) diff -= length;
     return diff;
@@ -72,6 +78,10 @@ export default function Recognition() {
     <section className="bg-transparent pt-0 pb-24 relative overflow-hidden">
       {/* Decorative backdrop */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-[#74C081]/5 rounded-full filter blur-[120px] pointer-events-none" />
+
+      {/* Edge gradient overlays for smooth blending */}
+      <div className="absolute top-0 left-0 bottom-0 w-[15%] md:w-[25%] bg-gradient-to-r from-white via-white/80 to-transparent z-20 pointer-events-none backdrop-blur-[1px]" />
+      <div className="absolute top-0 right-0 bottom-0 w-[15%] md:w-[25%] bg-gradient-to-l from-white via-white/80 to-transparent z-20 pointer-events-none backdrop-blur-[1px]" />
 
       <div className="max-w-7xl mx-auto px-6 relative z-10">
         {/* Section Header */}
@@ -88,24 +98,14 @@ export default function Recognition() {
         <div className="relative h-[250px] md:h-[400px] flex items-center justify-center overflow-visible select-none max-w-5xl mx-auto">
           {certificates.map((cert, index) => {
             const diff = getCircularDistance(index, activeIndex, certificates.length);
+            const oldDiff = getCircularDistance(index, prevActiveIndex, certificates.length);
+            const isWrapping = Math.abs(diff - oldDiff) > 1;
             const isActive = diff === 0;
 
             // Calculate positioning and design based on circular distance
             let positionX = 0;
             let scale = 0.8;
             let zIndex = 0;
-            let bgColor = "bg-[#1A4314]";
-
-            // Determine card background color/gradient based on position
-            if (diff === 0) {
-              bgColor = "bg-gradient-to-r from-[#143F1A] to-[#8AD493]"; // forest green to light green gradient
-            } else if (diff === -1) {
-              bgColor = "bg-[#3D8049]"; // medium-dark green
-            } else if (diff === 1) {
-              bgColor = "bg-[#529E66]"; // medium-light green
-            } else if (diff === -2 || diff === 2) {
-              bgColor = "bg-[#74C081]"; // light green
-            }
 
             if (isMobile) {
               if (diff === 0) {
@@ -153,27 +153,66 @@ export default function Recognition() {
               }
             }
 
+            // Determine opacity based on wrap state and position
+            const opacity = isWrapping
+              ? 0
+              : isActive
+                ? 1
+                : Math.abs(diff) === 1
+                  ? 0.85
+                  : 0.35;
+
+            // Use spring physics for smooth, organic motion except when wrapping
+            const cardTransition = isWrapping
+              ? { duration: 0 }
+              : {
+                type: "spring" as const,
+                stiffness: 150,
+                damping: 20,
+                mass: 0.8,
+              };
+
             return (
               <motion.div
                 key={cert.id}
+                style={{ zIndex }}
                 animate={{
                   x: positionX,
                   scale: scale,
-                  zIndex: zIndex,
+                  opacity: opacity,
                 }}
-                transition={{
-                  duration: 0.8,
-                  ease: "easeInOut",
-                }}
+                transition={cardTransition}
                 onClick={() => {
                   if (!isActive) {
                     setActiveIndex(index);
                   }
                 }}
-                className={`absolute w-[300px] md:w-[520px] h-[180px] md:h-[300px] rounded-[24px] md:rounded-[36px] ${bgColor} shadow-[0_15px_35px_rgba(0,0,0,0.1)] flex items-center justify-center cursor-pointer transition-colors duration-500`}
+                className="absolute w-[300px] md:w-[520px] h-[180px] md:h-[300px] rounded-[24px] md:rounded-[36px] bg-transparent shadow-[0_15px_35px_rgba(0,0,0,0.12)] flex items-center justify-center cursor-pointer overflow-hidden"
               >
+                {/* Background Overlays for smooth GPU-accelerated transition */}
+                <div
+                  className="absolute inset-0 bg-[#3D8049] transition-opacity duration-700 ease-in-out"
+                  style={{ opacity: diff === -2 ? 1 : 0 }}
+                />
+                <div
+                  className="absolute inset-0 bg-[#143F1A] transition-opacity duration-700 ease-in-out"
+                  style={{ opacity: diff === -1 ? 1 : 0 }}
+                />
+                <div
+                  className="absolute inset-0 bg-gradient-to-r from-[#143F1A] to-[#8AD493] transition-opacity duration-700 ease-in-out"
+                  style={{ opacity: diff === 0 ? 1 : 0 }}
+                />
+                <div
+                  className="absolute inset-0 bg-[#8AD493] transition-opacity duration-700 ease-in-out"
+                  style={{ opacity: diff === 1 ? 1 : 0 }}
+                />
+                <div
+                  className="absolute inset-0 bg-[#A1E2A9] transition-opacity duration-700 ease-in-out"
+                  style={{ opacity: diff === 2 ? 1 : 0 }}
+                />
+
                 {/* Certificate White Sheet */}
-                <div className="w-[80%] h-[84%] rounded-[12px] md:rounded-[20px] overflow-hidden bg-white shadow-inner relative flex items-center justify-center">
+                <div className="w-[82%] h-[84%] rounded-[16px] md:rounded-[24px] overflow-hidden bg-white shadow-[0_8px_20px_rgba(0,0,0,0.08)] relative flex items-center justify-center z-10">
                   <Image
                     src={cert.image}
                     alt={cert.title}
