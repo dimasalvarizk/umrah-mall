@@ -2,6 +2,7 @@
 
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Image from "next/image";
 
 const testimonials = [
   {
@@ -47,18 +48,24 @@ export default function Testimonials() {
           <div className="col-span-1 md:col-span-5 relative z-20 justify-self-center md:justify-self-end -mr-0 md:-mr-16 lg:-mr-20 md:-mt-8 lg:-mt-12">
             <div className="relative w-[280px] h-[360px] md:w-[300px] md:h-[390px]">
               {/* Image Container with overflow-hidden */}
-              <div className="w-full h-full rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] bg-gray-50 border border-gray-100">
+              <div className="w-full h-full rounded-[32px] overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.12)] bg-gray-50 border border-gray-100 relative">
                 <AnimatePresence mode="wait">
-                  <motion.img
+                  <motion.div
                     key={activeIndex}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     transition={{ duration: 0.4 }}
-                    src={current.image}
-                    alt={current.name}
-                    className="w-full h-full object-cover"
-                  />
+                    className="w-full h-full relative"
+                  >
+                    <Image
+                      src={current.image}
+                      alt={current.name}
+                      fill
+                      sizes="(max-width: 768px) 280px, 300px"
+                      className="object-cover"
+                    />
+                  </motion.div>
                 </AnimatePresence>
               </div>
 

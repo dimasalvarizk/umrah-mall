@@ -1,18 +1,22 @@
 "use client";
 
 import { motion } from "framer-motion";
-
+import Image from "next/image";
 
 export default function Hero() {
   return (
     <section id="home" className="relative min-h-screen flex flex-col justify-between pt-36 pb-16 overflow-hidden">
       {/* Background Image Container */}
-      <div
-        className="absolute inset-0 bg-cover bg-center z-0 scale-105"
-        style={{
-          backgroundImage: "url('/hero_bg.png')",
-        }}
-      />
+      <div className="absolute inset-0 z-0 overflow-hidden scale-105">
+        <Image
+          src="/hero_bg.png"
+          alt="Hero Background"
+          fill
+          priority
+          sizes="100vw"
+          className="object-cover object-center"
+        />
+      </div>
 
       {/* Black Dark Gradient Overlays */}
       <div className="absolute inset-0 bg-gradient-to-t from-dark-bg via-black/40 to-black/75 z-0" />

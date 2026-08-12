@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import Image from "next/image";
 
 const TwitterIcon = (props: React.SVGProps<SVGSVGElement>) => (
   <svg viewBox="0 0 24 24" width="16" height="16" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" {...props}>
@@ -53,13 +54,19 @@ export default function Footer() {
       {/* 1. Newsletter CTA Banner */}
       <div className="max-w-7xl mx-auto px-6 pt-16 pb-12">
         <div
-          className="relative rounded-3xl overflow-hidden bg-cover bg-[center_72%] border border-gray-100 shadow-[0_15px_40px_rgba(0,0,0,0.1)] px-8 py-16 md:px-12 md:py-24 text-center"
-          style={{ backgroundImage: "url('/Footer/Mosque.jpg')" }}
+          className="relative rounded-3xl overflow-hidden border border-gray-100 shadow-[0_15px_40px_rgba(0,0,0,0.1)] px-8 py-16 md:px-12 md:py-24 text-center z-10"
         >
+          <Image
+            src="/Footer/Mosque.jpg"
+            alt="Newsletter Background"
+            fill
+            sizes="(max-width: 768px) 100vw, 1200px"
+            className="object-cover object-[center_72%] z-0"
+          />
           {/* Black overlay */}
-          <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] z-0" />
+          <div className="absolute inset-0 bg-black/60 backdrop-blur-[1px] z-10" />
 
-          <div className="relative z-10 max-w-3xl mx-auto">
+          <div className="relative z-20 max-w-3xl mx-auto">
             <h3 
               className="text-2xl md:text-3xl font-bold text-white mb-6"
               style={{ fontFamily: "'All Genders v4', 'All Genders', sans-serif" }}
